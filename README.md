@@ -29,16 +29,41 @@ Or simply:
 `./android-icon.sh <source.png>`
 
 Options:
-- -s <source.png>   Source icon file (.png or .jpg). Required.
-- -b <background>   Optional background image (.png or .jpg).
-- -gf <hex>         Gradient start color (hex, e.g. FF0000 or #FF0000).
-- -gt <hex>         Gradient end color (hex, e.g. 0000FF or #0000FF).
-- -ga <percent>     Gradient alpha (percent). Default 40%.
-- -r <size>         Output square size in pixels (single integer). Default 248x248.
-- -k                Keep source file name in output (`icon/<name>_<SIZE>.png`). Default is `false`.
-- -h                Show usage.
+- `-s <source.png>`   Source icon file (.png or .jpg). **Required.**
+- `-bg <background>`  Optional background image (.png or .jpg). If omitted, a solid color is used (dominant color from source or white).
+- `-gf <hex>`         Gradient start color (hex, e.g. FF0000 or #FF0000).
+- `-gt <hex>`         Gradient end color (hex, e.g. 0000FF or #0000FF).
+- `-ga <percent>`     Gradient alpha (opacity, percent). Default is 40%.
+- `-sc <factor>`      Icon scale factor inside the inner circle (number, e.g. 1.2 or sqrt(2)). Default is sqrt(1).
+- `-r <size>`         Output square size in pixels (single integer). Default is 248x248.
+- `-k`                Keep source file name in output (`icon/<name>_<SIZE>.png`). Default is `false`.
+- `-h`                Show usage/help.
 
-Examples:
+**Notes on parameters:**
+- If both `-bg` and gradient (`-gf`, `-gt`) are specified, the gradient overlays the background image.
+- If only gradient is specified, the icon uses a gradient background.
+- If neither is specified, the dominant color from the source icon is used as background.
+- The scale factor (`-sc`) controls how much the icon fills the inner circle. Use values >1 to shrink, <1 to enlarge (default fits icon to inner circle).
+
+### Icon Scaling (`-sc` parameter)
+
+The `-sc` parameter controls how much the icon is scaled inside the inner circle of the adaptive icon.
+- The value is a number or expression (e.g. `1.2`, `sqrt(2)`).
+- The icon is resized so that its largest side fits into the inner circle divided by the scale factor.
+- **Default:** `sqrt(1)` (no scaling, icon fits exactly into the inner circle).
+- **Larger values (>1):** The icon will appear smaller inside the inner circle (more padding).
+- **Smaller values (<1):** The icon will appear larger, possibly overflowing the inner circle.
+
+**Examples:**
+- `-sc 1.5` — The icon will be scaled down to 2/3 of the inner circle diameter.
+- `-sc 1` — The icon will fill the inner circle exactly.
+- `-sc 0.8` — The icon will be scaled up, possibly cropped by the inner circle mask.
+
+**Tip:** Use values between `1` and `2` for best results.  
+If you want the icon to have more space around it, increase the scale factor.
+
+
+### Examples:
 
 1. Generate icon from source only (default 248x248):
    `./android-icon.sh -s assets/logo.png`
@@ -47,23 +72,28 @@ Examples:
    `./android-icon.sh -s assets/logo.png -r 512`
 
 3. Use a background image and custom size:
-   `./android-icon.sh -s assets/logo.png -b assets/bg.jpg -r 360`
+   `./android-icon.sh -s assets/logo.png -bg assets/bg.jpg -r 360`
 
-4. Add a gradient overlay on top of the background (centered) and custom size:
-   `./android-icon.sh -s assets/logo.png -b assets/bg.jpg -gf FF8A00 -gt 0066FF -ga 50 -r 512`
+4. Add a gradient overlay on top of the background and custom size:
+   `./android-icon.sh -s assets/logo.png -bg assets/bg.jpg -gf FF8A00 -gt 0066FF -ga 50 -r 512`
 
 5. Use gradient only (no background image):
    `./android-icon.sh -s assets/logo.png -gf 00FF00 -gt 0000FF -r 300`
 
+6. Custom icon scale factor (icon shrunk inside inner circle):
+   `./android-icon.sh -s assets/logo.png -sc 1.5 -r 512`
+
 ## Output
 
 - Temporary working files are written to `temp/`.
-- Final icon is written to `icon/ic_launcher_circle_<SIZE>.png`, where `<SIZE>` is the chosen output side (e.g. `icon/ic_launcher_circle_248.png` by default).
+- Final icon is written to `icon/ic_launcher_circle_<SIZE>.png`, or `icon/<source_name>_<SIZE>.png` if `-k` is used.
 
-## Notes
+## Features & Details
 
-- The script keeps processing in the source image native resolution and resizes only at the final step to the requested output size.
+- The script processes the source image at its native resolution and resizes only at the final step to the requested output size.
 - If the source image contains transparency, the dominant background color is derived by flattening over white (fallback is white).
+- The icon is centered and fitted into the inner circle, with optional scaling via `-sc`.
+- Background can be a solid color, a gradient, or a custom image (with optional gradient overlay).
 - For Windows, running in WSL is recommended for full compatibility.
 
 ## Troubleshooting
