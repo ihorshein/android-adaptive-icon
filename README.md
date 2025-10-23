@@ -34,7 +34,7 @@ Options:
 - `-gf <hex>`         Gradient start color (hex, e.g. FF0000 or #FF0000).
 - `-gt <hex>`         Gradient end color (hex, e.g. 0000FF or #0000FF).
 - `-ga <percent>`     Gradient alpha (opacity, percent). Default is 40%.
-- `-sc <factor>`      Icon scale factor inside the inner circle (number, e.g. 1.2 or sqrt(2)). Default is sqrt(1).
+- `-sc <factor>`      Icon scale factor inside the inner circle (number, e.g. 1.2). Default is sqrt(1).
 - `-r <size>`         Output square size in pixels (single integer). Default is 248x248.
 - `-k`                Keep source file name in output (`icon/<name>_<SIZE>.png`). Default is `false`.
 - `-h`                Show usage/help.
@@ -48,7 +48,7 @@ Options:
 ### Icon Scaling (`-sc` parameter)
 
 The `-sc` parameter controls how much the icon is scaled inside the inner circle of the adaptive icon.
-- The value is a number or expression (e.g. `1.2`, `sqrt(2)`).
+- The value is a number or expression (e.g. `1.2`).
 - The icon is resized so that its largest side fits into the inner circle divided by the scale factor.
 - **Default:** `sqrt(1)` (no scaling, icon fits exactly into the inner circle).
 - **Larger values (>1):** The icon will appear smaller inside the inner circle (more padding).

@@ -22,7 +22,7 @@ mkdir -p "$ICON_DIR"
 
 OUT_SIZE=248
 KEEP_NAME=0
-ICON_SCALE="sqrt(1.2)"
+ICON_SCALE="sqrt(1)"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
