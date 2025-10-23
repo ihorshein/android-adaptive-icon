@@ -115,7 +115,11 @@ magick "$OUTDIR/bg_inner.png" "$OUTDIR/mask_inner.png" -compose CopyOpacity -com
 # 4. Fit icon into inner circle, scale evenly, preserve transparency
 SIDE_ICON_IN_CIRCLE=$(awk "BEGIN {printf \"%d\", ${DIAM_INNER}/${ICON_SCALE}}")
 [ "$SIDE_ICON_IN_CIRCLE" -lt 1 ] && SIDE_ICON_IN_CIRCLE=1
-magick "$SRC_ICON" -resize ${SIDE_ICON_IN_CIRCLE}x${SIDE_ICON_IN_CIRCLE} -gravity center -background none -extent ${DIAM_INNER}x${DIAM_INNER} PNG32:"$OUTDIR/icon_fitted.png"
+magick "$SRC_ICON" -resize ${SIDE_ICON_IN_CIRCLE}x${SIDE_ICON_IN_CIRCLE} -gravity center -background none -extent ${DIAM_INNER}x${DIAM_INNER} PNG32:"$OUTDIR/icon_fitted_raw.png"
+
+# Properly mask: preserve source icon transparency inside the circle
+magick "$OUTDIR/icon_fitted_raw.png" "$OUTDIR/mask_inner.png" -compose DstIn -composite PNG32:"$OUTDIR/icon_fitted.png"
+
 magick "$OUTDIR/circle_inner.png" "$OUTDIR/icon_fitted.png" -gravity center -compose Over -composite PNG32:"$OUTDIR/inner_with_icon.png"
 
 # 5. Compose final icon: outer circle, then inner with icon on top
