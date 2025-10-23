@@ -117,7 +117,7 @@ if [ -n "$SRC_BG" ] || { [ -n "$GRADIENT_FROM" ] && [ -n "$GRADIENT_TO" ]; }; th
     magick -size ${SIZE}x${SIZE} gradient:"$GRADIENT_FROM"-"$GRADIENT_TO" -alpha set -channel A -evaluate set "$GRADIENT_ALPHA" +channel PNG32:"$OUTDIR/gradient_full.png"
   fi
 else
-  # Derive dominant color (flatten to white to ignore transparency), fallback to white
+  # Get dominant color (flatten to white to ignore transparency), fallback to white
   DOM_HEX="$(magick "$SRC_ICON" -background white -alpha remove -flatten -colorspace sRGB -resize 4x4\! -format "%[hex:p{0,0}]" info:- 2>/dev/null || true)"
   if [ -n "$DOM_HEX" ]; then
     DOM_COLOR="#${DOM_HEX}"
@@ -167,18 +167,21 @@ else
   magick -size ${DIAM_ICON}x${DIAM_ICON} xc:none PNG32:"$OUTDIR/bg_scaled_small.png"
 fi
 
-# Scale icon to inner circle
-magick "$OUTDIR/icon_square.png" -resize ${DIAM_ICON}x${DIAM_ICON}^ -gravity center -background none -extent ${DIAM_ICON}x${DIAM_ICON} PNG32:"$OUTDIR/icon_scaled_only.png"
+# Scale icon_square.png to DIAM_ICON x DIAM_ICON so that the square fits entirely inside the circle
+magick "$OUTDIR/icon_square.png" -resize ${DIAM_ICON}x${DIAM_ICON} PNG32:"$OUTDIR/icon_square_scaled.png"
 
 if [ "$GRADIENT_CREATED" -eq 1 ]; then
   magick "$OUTDIR/gradient_full.png" -gravity center -crop ${DIAM_ICON}x${DIAM_ICON}+0+0 +repage PNG32:"$OUTDIR/gradient_crop_icon.png"
   magick "$OUTDIR/bg_scaled_small.png" "$OUTDIR/gradient_crop_icon.png" -gravity center -compose Over -composite PNG32:"$OUTDIR/bg_with_grad_small.png"
-  magick "$OUTDIR/bg_with_grad_small.png" "$OUTDIR/icon_scaled_only.png" -gravity center -compose Over -composite PNG32:"$OUTDIR/content_small.png"
+  magick "$OUTDIR/bg_with_grad_small.png" "$OUTDIR/icon_square_scaled.png" -gravity center -compose Over -composite PNG32:"$OUTDIR/content_small.png"
 else
-  magick "$OUTDIR/bg_scaled_small.png" "$OUTDIR/icon_scaled_only.png" -gravity center -compose Over -composite PNG32:"$OUTDIR/content_small.png"
+  magick "$OUTDIR/bg_scaled_small.png" "$OUTDIR/icon_square_scaled.png" -gravity center -compose Over -composite PNG32:"$OUTDIR/content_small.png"
 fi
 
-magick "$OUTDIR/content_small.png" "$OUTDIR/mask_icon.png" -compose CopyOpacity -composite PNG32:"$OUTDIR/icon_circle.png"
+# Remove icon mask, do not crop corners
+# magick "$OUTDIR/content_small.png" "$OUTDIR/mask_icon.png" -compose CopyOpacity -composite PNG32:"$OUTDIR/icon_circle.png"
+# Instead, just use content_small.png as icon_circle.png
+cp "$OUTDIR/content_small.png" "$OUTDIR/icon_circle.png"
 
 magick "$OUTDIR/base.png" "$OUTDIR/icon_circle.png" -gravity center -compose Over -composite PNG32:"$OUTDIR/ic_launcher_circle_full.png"
 
