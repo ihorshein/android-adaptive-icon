@@ -45,7 +45,25 @@ Options:
 - If neither is specified, the dominant color from the source icon is used as background.
 - The scale factor (`-sc`) controls how much the icon fills the inner circle. Use values >1 to shrink, <1 to enlarge (default fits icon to inner circle).
 
-Examples:
+### Icon Scaling (`-sc` parameter)
+
+The `-sc` parameter controls how much the icon is scaled inside the inner circle of the adaptive icon.
+- The value is a number or expression (e.g. `1.2`, `sqrt(2)`).
+- The icon is resized so that its largest side fits into the inner circle divided by the scale factor.
+- **Default:** `sqrt(1)` (no scaling, icon fits exactly into the inner circle).
+- **Larger values (>1):** The icon will appear smaller inside the inner circle (more padding).
+- **Smaller values (<1):** The icon will appear larger, possibly overflowing the inner circle.
+
+**Examples:**
+- `-sc 1.5` — The icon will be scaled down to 2/3 of the inner circle diameter.
+- `-sc 1` — The icon will fill the inner circle exactly.
+- `-sc 0.8` — The icon will be scaled up, possibly cropped by the inner circle mask.
+
+**Tip:** Use values between `1` and `2` for best results.  
+If you want the icon to have more space around it, increase the scale factor.
+
+
+### Examples:
 
 1. Generate icon from source only (default 248x248):
    `./android-icon.sh -s assets/logo.png`

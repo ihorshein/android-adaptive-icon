@@ -22,7 +22,7 @@ mkdir -p "$ICON_DIR"
 
 OUT_SIZE=248
 KEEP_NAME=0
-ICON_SCALE="sqrt(1)"
+ICON_SCALE="sqrt(1.2)"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -103,12 +103,12 @@ else
 fi
 
 # 2. Mask for outer circle
-magick -size ${DIAM_OUTER}x${DIAM_OUTER} xc:none -fill white -draw "circle $RADIUS_OUTER,$RADIUS_OUTER $DIAM_OUTER,$RADIUS_OUTER" PNG32:"$OUTDIR/mask_outer.png"
+magick -size ${DIAM_OUTER}x${DIAM_OUTER} xc:none -fill white -draw "circle $RADIUS_OUTER,$RADIUS_OUTER $(($DIAM_OUTER-1)),$RADIUS_OUTER" PNG32:"$OUTDIR/mask_outer.png"
 magick "$OUTDIR/bg.png" -gravity center -crop ${DIAM_OUTER}x${DIAM_OUTER}+0+0 +repage PNG32:"$OUTDIR/bg_outer.png"
 magick "$OUTDIR/bg_outer.png" "$OUTDIR/mask_outer.png" -compose CopyOpacity -composite PNG32:"$OUTDIR/circle_outer.png"
 
 # 3. Mask for inner circle
-magick -size ${DIAM_INNER}x${DIAM_INNER} xc:none -fill white -draw "circle $RADIUS_INNER,$RADIUS_INNER $DIAM_INNER,$RADIUS_INNER" PNG32:"$OUTDIR/mask_inner.png"
+magick -size ${DIAM_INNER}x${DIAM_INNER} xc:none -fill white -draw "circle $RADIUS_INNER,$RADIUS_INNER $(($DIAM_INNER-1)),$RADIUS_INNER" PNG32:"$OUTDIR/mask_inner.png"
 magick "$OUTDIR/bg.png" -gravity center -crop ${DIAM_INNER}x${DIAM_INNER}+0+0 +repage PNG32:"$OUTDIR/bg_inner.png"
 magick "$OUTDIR/bg_inner.png" "$OUTDIR/mask_inner.png" -compose CopyOpacity -composite PNG32:"$OUTDIR/circle_inner.png"
 
